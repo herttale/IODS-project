@@ -1,0 +1,8 @@
+---
+title: "README"
+author: "herttale"
+date: "26 tammikuuta 2017"
+output: html_document
+---
+
+This project is part of IODS course and serves as a publishing paltform for my exercises. This is also my personal project for learning R and R markdown. My course diary will be published here: https://herttale.github.io/IODS-project/

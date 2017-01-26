@@ -1,4 +1,11 @@
 
-# About the project
+# Week 1
+## About the project
 
-*Write a short description about the course and add a link to your github repository here. This is an R markdown (.Rmd) file so you can use R markdown syntax. See the 'Useful links' page in the mooc area (chapter 1) for instructions.*
+This is my first week learning R and R markdown on IODS course. For the next weeks I'll be publishing my completed exercises here. 
+
+Here's a link to my published GitHub page/course diary: [https://herttale.github.io/IODS-project/](https://herttale.github.io/IODS-project/) 
+
+And here's to my GitHub repository: [https://github.com/herttale/IODS-project](https://github.com/herttale/IODS-project)
+
+Enjoy!
