@@ -1,7 +1,89 @@
-# Insert chapter 2 title here
+# Week 2: Data wrangling and regression analysis 
 
-*Describe the work you have done this week and summarize your learning.*
+*This week I've learned how to modify a dataset for analysis purposes, how to produce different summaries for a dataset and how to study the validity of a linear model. In the following I'll present the week's exercises and the methods I used for linear regression analysis and model validation.*
 
-- Describe your work and results clearly. 
-- Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods
-- Assume the reader has no previous knowledge of your data or the more advanced methods you are using  
+Let's first read the dataset to the r environment, study it's structure and dimensions and print a generic summary:
+
+```{r}
+lrn14 <- read.table("data/learn2014Data")
+str(lrn14)
+
+```
+
+```{r}
+dim(lrn14)
+```
+
+```{r}
+summary(lrn14)
+```
+
+As we can see, the dataset consist of 166 rows/observations and 7 columns/variables. The data is based on a survey study done by Kimmo Vehkalahti. The survey was aimed at students and consisted of questions related to learning approaches and students achievements in an introductory statistics course in Univ. of Helsinki. Next I'm going to take a look into the relatinships between the variables of the data.
+
+Variables deep, stra and surf are calculated as means of questions related to deep approach, strategic approach and surface approach to learning.  Variable "Attitude" stands for student's attitude towards statistics and "Points" stands for the student's final grade.
+
+As we can see from the summary of the data (above), the dataset is skewed in terms of gender - there's twice as much female students as there is male students. Not suprisingly, the the majority of answers are from students under 30 years old.
+
+Let's plot the variables in a matrix to study their relationships:
+
+```{r}
+library(GGally)
+library(ggplot2)
+ggpairs(lrn14, mapping = aes(col=gender, alpha = 0.3), lower = list(combo = wrap("facethist", bins = 20)))
+
+```
+
+
+From the diagram above we can conclude that male students have slightly better attitude towards statistics than female students and female students seem to be slightly more strategic learners than their male peers, but generally the distributions look quite similar for both genders.
+Overall the correlations between variables are not very high.
+
+Let's test how attitude and deep and strategic learning are related to students' points through summarising a linear model:
+
+```{r}
+summary(lm(data = lrn14, Points ~ Attitude + stra + deep))
+
+```
+
+Here we see that attitude and strategic learning are positively correlated with points, but suprisingly deep learning seems to have a negative relationship with points gained. 
+
+We also see that Attitude is the only variable with a statistically significant correlation with points (p-value = 0.00000000444). This means that the propability for getting a sample like this from a population with no correlation between attitude and points is only 0.00000000444 (highly impropable). This means that we can assume with confidence that our sample is somewhat representative of the phenomenon and that there is a significant relationship between attitude and points in our dataset. We are also able to say that strategic and deep learning approaches don't have a significant correlation and should be removed from the model. 
+
+Let's draw a scatter diagram of only points and attitude:
+
+```{r}
+f <- ggplot(data = lrn14, aes(x = Attitude, y = Points))
+f + geom_point() + geom_smooth(method = "lm")
+```
+
+Here we can see, that the points are very scattered, as we could assume from the relatively modest correlation (0.35) and quite big standard error (3.40).
+
+Lets make a new model with only Points and Attitude:
+
+```{r}
+A_vs_P <- lm(data = lrn14, Points ~ Attitude)
+summary(A_vs_P)
+```
+
+Here we see that the multiple R-squared is 0.19, which means that with a students' attitudes we can explain 19 % of their exam points. 
+
+When choosing a linear model we assume, that the relationship between our variables is linear and that the residuals of our model are normally distributed. Let's test our model assumptions by plotting the residuals:
+
+```{r}
+plot(A_vs_P, which = c(1,2,5))
+```
+
+From the first plot (Residuals vs Fitted) we can see, that the residuals are quite evenly distributed - there doesn't seem to be any pattern in the distribution of residuals. This strengthens our assumption of the relationship's linearity.
+
+The second plot (Normal Q-Q) lets us validate distribution of residuals even better: our model's residuals are shared in percentiles and plotted against theoretical percentiles of normally distributed data. From the plot we can see that the residuals of our model are approximately normally distributed.
+
+The third plot (Residuals vs Leverage) lets us see if any outliers influence the regression line significantly. If some points are outside the Cook's distance lines, they are influential for the model. Here we can't even see  Cook's distance lines, since all observations fit well inside them.
+
+As a conclusion we can state that the linear model fits our data well.
+
+
+
+
+
+
+
+
