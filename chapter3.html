@@ -123,6 +123,10 @@ $(document).ready(function () {
 </div>
 
 
+<div id="week-3" class="section level1">
+<h1>Week 3</h1>
+<div id="logistic-regression" class="section level2">
+<h2>Logistic regression</h2>
 <p><strong>This week i’ve learned some more data wrangling and a new method, logistic regression.</strong></p>
 <p>This week I’ll study the relationship between student’s alcohol consumption and school performance. I’ll explore a dataset with answers from 382 students regarding school attendance/performance, social background and alcohol consumption habits etc. The data’s been derived from <a href="https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION" class="uri">https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION</a> and as stated, it includes alcohol usage, social, gender and study time attributes for each student.</p>
 <p>Let’s first read the modified dataset into a data frame and take a look at the columns:</p>
@@ -254,6 +258,8 @@ CI &lt;- confint(m) %&gt;% exp</code></pre>
 ## goout       2.087359 1.66817170 2.64318173
 ## absences    1.080069 1.03581041 1.13071158</code></pre>
 <p>From the odds ratio (OR) we see, that students who have a high value in variable goout (go out with friends) are 2.09 times (with 95 % confidence 1.67 - 2.64 times) more likely to have a high alcohol consumption than their not so outgoing peers. Not suprisingly, the absences variable has an almost non-existent relatioship with the high alcohol usage, and the students who have a high value in absences are only 1.08 times (with 95 % confidence 1.04 - 1.13 times) more likely to have high alcohol consumption than their peers with low absences.</p>
+</div>
+</div>
 
 
 

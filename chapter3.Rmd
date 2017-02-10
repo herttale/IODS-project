@@ -4,7 +4,8 @@ author: "herttale"
 date: "7 helmikuuta 2017"
 output: html_document
 ---
-
+# Week 3
+## Logistic regression
 **This week i've learned some more data wrangling and a new method, logistic regression.**
 
 This week I'll study the relationship between student's alcohol consumption and school performance. I'll explore a dataset with answers from 382 students regarding school attendance/performance, social background and alcohol consumption habits etc. The data's been derived from <https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION> and as stated, it includes alcohol usage, social, gender and study time attributes for each student.
