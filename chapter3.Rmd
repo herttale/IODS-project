@@ -1,0 +1,110 @@
+---
+title: "chapter3"
+author: "herttale"
+date: "7 helmikuuta 2017"
+output: html_document
+---
+
+**This week i've learned some more data wrangling and a new method, logistic regression.**
+
+This week I'll study the relationship between student's alcohol consumption and school performance. I'll explore a dataset with answers from 382 students regarding school attendance/performance, social background and alcohol consumption habits etc. The data's been derived from <https://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION> and as stated, it includes alcohol usage, social, gender and study time attributes for each student.
+
+
+
+Let's first read the modified dataset into a data frame and take a look at the columns:
+
+```{r}
+alc <- read.table("data/students_alc")
+
+colnames(alc)
+```
+
+The data consists of 35 columns/variables: student's school, student's sex, student's age, home address, family size, parent's cohabitation status mother's and father's education, mother's and father's job, reason to choose this school, student's guardian, home to school travel time, weekly study time, number of past class failures, extra educational support, family educational support, extra paid classes within the course subject (Math or Portuguese), extra-curricular activities, attended nursery school, wants to take higher education, Internet access at home, with a romantic relationship, quality of family relationships, free time after school, going out with friends, workday alcohol consumption, weekend alcohol consumption, current health status and number of school absences.
+
+
+My hypothesis is, that high alcohol consumption is positively correlated with variables goout (going out with friends) and absences (number of school absences) and negatively correlated with romantic (with a romantic relationship) and paid (extra paid classes within the course subject).
+
+
+Let's observe the distributions of the variables first with just a set of simple histograms:
+```{r}
+library(tidyr); library(dplyr); library(ggplot2)
+
+gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar()
+
+```
+
+Let's produce also a numerical summary of some  of the variables that interest us:
+
+
+```{r}
+alc %>% group_by(high_use, paid) %>% summarise(count = n(), mean(absences))
+```
+```{r}
+alc %>% group_by(high_use, romantic) %>% summarise(count = n())
+```
+
+
+
+Here we see, that students who don't use much alcohol but take paid classes have less absences in average than their peers who don't use much alcohol and don't take paid classes. But suprisingly those students who are heavy alcohol users and take paid extra classes have more absences in average than their peers who are also heavy alcohol users but don't take paid classes. Overall we can see, that heavy alcohol consumption seems to be related to more school absences. 
+
+We also see, that of students who take paid classes 57/(120+57) or 32 % are heavy alcohol users and of students who don't take paid classes 57/(57+148) or 28 % are heavy alcohol users. This reveals that in the light of this data my hypothesis about a negative relationsip between alcohol usage and paid courses taken is wrong.
+
+Of the students who have a romantic relationship 33/(33+88) or 27 % are heavy alcohol users and of the students who don't have a romantic relationship 81/(81+180) or 31 % are heavy alcohol users, so there doesn't seem to be any significant relatioship either.
+
+Let's make another plot:
+
+```{r}
+g2 <- ggplot(alc, aes(x = high_use, y = goout, col=sex))
+
+# define the plot as a boxplot and draw it
+
+g2 + geom_boxplot() + ylab("go out with friends")
+```
+
+In this boxplot we see, that people with high alcohol usage go out with friends more than their peers with low alcohol usage ON AVERAGE, which lets us assume that our hypothesis of the positive relatioship between these two variables holds.
+
+Let's try a logistic regression model for our variables:
+
+```{r}
+m <- glm(high_use ~ goout + absences + romantic + paid, data = alc, family = "binomial")
+
+summary(m)
+
+```
+
+Here we see that only variables "goout" and "absences" have statistically significant relationsips with high alcohol usage. Goout has a very strong positive relationship with high alcohol usage, whereas the absences variable has a very low correlation with high alcohol usage. Let's remove the statistically insignificant variables from the model, and print a new summary and coefficient's odds ratios:
+
+
+```{r}
+m <- glm(high_use ~ goout + absences, data = alc, family = "binomial")
+
+summary(m)
+```
+
+
+```{r}
+
+OR <- coef(m) %>% exp
+
+CI <- confint(m) %>% exp
+
+cbind(OR, CI)
+
+```
+
+
+From the odds ratio (OR) we see, that students who have a high value in variable goout (go out with friends) are 2.09 times (with 95 % confidence 1.67 - 2.64 times) more likely to have a high alcohol consumption than their not so outgoing peers. Not suprisingly, the absences variable has an almost non-existent relatioship with the high alcohol usage, and the students who have a high value in absences are only 1.08 times (with 95 % confidence 1.04 - 1.13 times) more likely to have high alcohol consumption than their peers with low absences.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
