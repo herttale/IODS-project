@@ -1,0 +1,105 @@
+---
+title: "Week 4"
+author: "herttale"
+date: "17 helmikuuta 2017"
+output: html_document
+---
+
+# Week 4
+## Clustering and classification
+
+In this exercise I will be studying the Boston dataset, which is included in a free R package MASS. The dataset describes Housing Values in Suburbs of Boston and consists of 14 variables from demographics to air quality and distance from city centres. The full list and explanations of variables can be seen here: <https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/Boston.html>
+
+Let's take a look at the structure of the data:
+
+```{r}
+library(MASS)
+
+data("Boston")
+
+dim(Boston)
+
+str(Boston)
+```
+
+Here we see, that the dataset has 506 suburbs/rows in total, and as mentioned, 14 variables/columns.
+
+Lets explore the data through a simple summary and some plots:
+
+```{r}
+summary (Boston)
+```
+
+```{r}
+pairs(Boston)
+```
+
+Here we can see different relatioships between the variables. For example (and not suprisingly), distance to centres seems to have a non-linear correlation with nitrogen oxides and crime rate. 
+
+Next I'll standardize the data and save it as a new item. After the standardization the values close to a variable's average will have a new value close to 0.
+
+```{r}
+BC <- scale(Boston)
+summary(BC)
+```
+
+Since the item BC is now a matrix, I'll have to convert it back to a data frame. After that, I'll convert the crime rate  -variable  to a categorical variable:
+
+```{r}
+BC <- as.data.frame(BC)
+
+scaledCrim <- BC$crim
+
+quantiles <- quantile(scaledCrim)
+
+cRate <- cut(scaledCrim, breaks = quantiles, include.lowest = TRUE, label = c("low", "med_low", "med_high", "high"))
+
+table(cRate)
+
+BC <- dplyr::select(BC, -crim)
+
+BC <- data.frame(BC, cRate)
+
+summary(BC$cRate)
+
+```
+
+Next I'll divide my modified dataset into train and test -sets so, that 80 % of the data is included in the train set:
+
+```{r}
+ 
+rows <- nrow(BC)
+
+n <- sample(rows,  size = rows * 0.8)
+
+train <- BC[n,]
+
+test <- BC[-n,]
+
+```
+
+Next I'll fit a linear discriminant analysis on my newly ceated train -dataset:
+
+```{r}
+ldaTrain <- lda(cRate~., data = train)
+
+categ = as.numeric(train$cRate)
+
+plot(ldaTrain, dimen = 2, col = categ)
+
+```
+
+Next I'll save the crime rate categories as a vector and remove the crime rate column from my test set, after which I'll use predict-function to predict the crime rates of my test set:
+
+
+```{r}
+C_categ <- test$cRate
+
+test <- dplyr::select(test, -cRate)
+
+ldaPred <- predict(ldaTrain, newdata = test)
+
+table(correct = C_categ, predicted = ldaPred$class)
+```
+
+In the table above we can see, that the model was able to predict the crime rates quite well - if not counting the problems with the med_low and med_high categories.
